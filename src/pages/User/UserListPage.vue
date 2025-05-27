@@ -68,11 +68,8 @@
 
     <UserDetailModal v-model="detailsVisible" :user="selectedUser"/>
     <div class="pagination-container">
-      <el-pagination
-          v-if="total > 0"
-          :total="total"
-          :page-size="pageSize"
-          :current-page="currentPage"
+      <el-pagination :page-size="20"  @change="handlePageChange"
+          :total="total"  layout="prev, pager, next"
       />
     </div>
   </div>
@@ -80,21 +77,19 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useCookieStore } from "../stores/cookieStore";
-import UserCard from "../components/UserCard.vue";
-import UserDetailModal from "../components/UserDetailModal.vue";
-import type {  User } from '../types/user'
-import { fetchFromApi } from '../utils/request'
+import { useCookieStore } from "../../stores/cookieStore.ts";
+import UserCard from "./components/UserCard.vue";
+import UserDetailModal from "./components/UserDetailModal.vue";
+import type {  User } from '../../types/user.ts'
+import { fetchFromApi } from '../../utils/request.ts'
 import { reactive } from "vue";
-import { getLocalTime } from "../utils";
-import { getIdInfo, splitStr } from "../constants";
+import { getLocalTime } from "../../utils";
+import { getIdInfo, splitStr } from "../../constants";
 
 // 状态变量
 const users = ref<User[]>([])
 const loading = ref(false)
-const filterUserId = ref('6005682439')
 const currentPage = ref(1)
-const pageSize = ref(10)
 const total = ref(0)
 const cookieStore = useCookieStore();
 const detailsVisible = ref(false);
@@ -107,7 +102,7 @@ function showDetails(user: User) {
 }
 
 
-const handleDelete =  (userId: string) => {
+const handleDelete =  (userId: number) => {
    deleteUser(userId);
 };
 
@@ -117,7 +112,7 @@ const handleClearAll = async () => {
 };
 
 const filterForm = reactive({
-  userId: "",
+  userId: "6005682439",
 });
 
 function handleFetch() {
@@ -141,14 +136,17 @@ const updateSentStatus = (id: number) => {
 // 修改后的fetchUsers方法
 const fetchUsers = async () => {
   try {
+    console.log('filterUserId.value',filterForm.userId)
     loading.value = true
     const response = await fetchFromApi('/friends',
         {
-          userId: filterUserId.value,
+          userId:filterForm.userId,
           page: currentPage.value
         }
     )
+    console.log('response',response.total)
     users.value = response.data
+    total.value=response.total
   } catch (err) {
   } finally {
     loading.value = false
@@ -159,13 +157,13 @@ function sendUser(userId: number) {
   updateSentStatus(userId)
 }
 
-function deleteUser(userId: string) {
+function deleteUser(userId: number) {
   users.value = users.value.filter(user => user.id !== userId)
 }
 
 function sendAll() {
   users.value.forEach(user => {
-    if (!sentIds.value.includes(user.id)) {
+    if (!sentIds.value.includes(user.id as any)) {
       sendUser(user.id)
     }
   })

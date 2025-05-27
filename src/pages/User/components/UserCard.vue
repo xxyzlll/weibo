@@ -2,7 +2,8 @@
   <el-card class="user-card">
     <div class="user-info">
       <div class="user-header">
-        <el-avatar :src="user.profile_image_url"/>
+        <el-avatar :src="user.profile_image_url"
+                   @click="openWeiboProfile(user.id)"/>
         <div class="user-basic">
           <div class="user-name-row">
             <span class="user-name">{{ user.screen_name }}</span>
@@ -31,6 +32,7 @@
         <el-button size="small" @click="$emit('view-details')">详情</el-button>
         <el-button
             size="small"
+            v-if="!hasSent"
             type="primary"
             :disabled="user.isSent"
             @click="$emit('send')"
@@ -47,12 +49,13 @@
 </template>
 
 <script setup lang="ts">
-import type { User } from '../types/user'
+import type { User } from '../../../types/user.ts'
 import { computed } from 'vue'
+import { openWeiboUrl } from "../index.ts";
 
 const props = defineProps<{
   user: User
-  sentIds: number[]
+  sentIds: string[]
 }>()
 
 defineEmits<{
@@ -61,8 +64,11 @@ defineEmits<{
   'delete': []
 }>()
 
-const hasSent = computed(() => props.sentIds.includes(props.user.id+''))
+const hasSent = computed(() => props.sentIds.includes(props.user.id + ''))
 
+function openWeiboProfile(id: number) {
+  openWeiboUrl(id)
+}
 </script>
 
 

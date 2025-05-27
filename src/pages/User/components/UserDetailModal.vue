@@ -1,16 +1,16 @@
 <template>
   <el-dialog
-    v-model="visible"
-    :title="user?.screen_name + ' 的详细信息'"
-    width="50%"
+      v-model="visible"
+      :title="user?.screen_name + ' 的详细信息'"
+      width="50%"
   >
     <div class="user-details">
       <div class="user-header">
         <el-avatar
-          :size="64"
-          :src="user?.profile_image_url"
-          class="clickable-avatar"
-          @click="openWeiboProfile"
+            :size="64"
+            :src="user?.profile_image_url"
+            class="clickable-avatar"
+            @click="openWeiboProfile"
         />
         <div class="user-basic-info">
           <h3>{{ user?.screen_name }}</h3>
@@ -42,11 +42,11 @@
         </div>
         <div class="info-item">
           <span class="info-label">发送状态：</span>
-          <span class="info-value">{{ user?.isSent ? '已发送' : '未发送' }}</span>
+          <span class="info-value">{{ sendData?.id ? '已发送' : '未发送' }}</span>
         </div>
-        <div class="info-item" v-if="user?.sentAt">
+        <div class="info-item" v-if="sendData?.id ">
           <span class="info-label">发送时间：</span>
-          <span class="info-value">{{ formatDate(user.sentAt) }}</span>
+          <span class="info-value">{{ sendData?.time }}</span>
         </div>
       </div>
 
@@ -59,8 +59,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { User } from '../types/user'
+import { computed, ref } from 'vue'
+import type { User } from '../../../types/user.ts'
+import { getIdInfo } from "../../../constants";
+import { openWeiboUrl } from "../index.ts";
 
 const props = defineProps<{
   modelValue: boolean
@@ -71,20 +73,26 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean]
 }>()
 
+const sendData = ref<any>(
+    null
+)
+
 const visible = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value)
+  get: () => {
+    if (props.modelValue) {
+      const data = JSON.parse(localStorage.getItem('sentIds') || '[]')
+      const findData = data.find((item: string) => item.startsWith(props.user?.id as any)) || ''
+      sendData.value = getIdInfo(findData)
+    }
+    return props.modelValue
+  },
+  set: (value) => {
+    emit('update:modelValue', value)
+  }
 })
 
-function formatDate(timestamp?: number) {
-  if (!timestamp) return ''
-  return new Date(timestamp).toLocaleString()
-}
-
 function openWeiboProfile() {
-  if (props.user?.id) {
-    window.open(`https://weibo.com/u/${props.user.id}`, '_blank')
-  }
+  openWeiboUrl(props.user?.id)
 }
 </script>
 

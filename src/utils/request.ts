@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { type AxiosResponse } from 'axios'
 import type { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { ElLoading, ElMessage } from 'element-plus'
 import type { LoadingInstance } from 'element-plus/lib/components/loading/src/loading'
@@ -40,20 +40,20 @@ export const createAxiosInstance = (config?: AxiosRequestConfig): AxiosInstance 
   )
 
   instance.interceptors.response.use(
-    (response) => {
+    (response:AxiosResponse) => {
       const { loading = true } = response.config
       if (loading) cancelLoading()
       const { status, data, message } = response
-      
+
       if (status === 200) return data
-      
+
       ElMessage.error(message)
       return Promise.reject(response.data)
     },
     (error) => {
       const { loading = true } = error.config
       if (loading) cancelLoading()
-      
+
       ElMessage.error(error?.response?.data?.message || '服务端异常')
       return Promise.reject(error)
     }
@@ -71,7 +71,7 @@ export const fetchFromApi = async (url: string, data?: any, method: string = 'GE
       method,
       ...(method.toUpperCase() === 'GET' ? { params: data } : { data })
     }
-    
+
     return await request(config)
   } catch (error) {
     console.error('API请求错误:', error)
