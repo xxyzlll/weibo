@@ -172,71 +172,35 @@ function sendAll() {
 
 <style scoped>
 .user-list-page {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  overflow-y: auto; /* 启用滚动 */
+  padding: 12px;
+  max-width: 100%;
 }
 
-.page-header {
-  margin-bottom: 20px;
-}
+@media (max-width: 768px) {
+  .filter-section {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .action-buttons {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 
-.cookie-section {
-  margin-bottom: 20px;
-  max-width: 1200px;
-}
+  .user-list {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 
-.filter-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-}
-
-.filter-form {
-  flex: 1;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 10px;
-  margin-left: 20px;
-}
-
-.loading-container {
-  min-height: calc(100vh - 200px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  .el-pagination {
+    --el-pagination-font-size: 12px;
+  }
 }
 
 .user-list {
-  width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-  max-width: 1200px;
-}
-
-:deep(.el-empty) {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.pagination-container {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  z-index: 2000; /* 提升层级 */
-  width: auto; /* 移除固定宽度 */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  padding: 8px 0;
 }
 </style>
