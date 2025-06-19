@@ -112,7 +112,7 @@ const handleClearAll = async () => {
 };
 
 const filterForm = reactive({
-  userId: "6005682439",
+  userId: "6150456633",
 });
 
 function handleFetch() {
@@ -141,6 +141,7 @@ const fetchUsers = async () => {
     const response = await fetchFromApi('/friends',
         {
           userId:filterForm.userId,
+          cookie: cookieStore.cookie,
           page: currentPage.value
         }
     )

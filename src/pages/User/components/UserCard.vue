@@ -1,17 +1,22 @@
 <template>
-  <el-card class="user-card">
+  <el-card class="user-card" v-if="user.gender==='f'">
     <div class="user-info">
       <div class="user-header">
-        <el-avatar :src="user.profile_image_url"
-                   @click="openWeiboProfile(user.id)"/>
+        <el-avatar
+          :src="user.profile_image_url"
+          @click="openWeiboProfile(user.id)"
+        />
         <div class="user-basic">
           <div class="user-name-row">
             <span class="user-name">{{ user.screen_name }}</span>
-            <el-tag :type="user.gender === 'f' ? 'danger' : 'primary'" size="small">
-              {{ user.gender === 'f' ? '女' : '男' }}
+            <el-tag
+              :type="user.gender === 'f' ? 'danger' : 'primary'"
+              size="small"
+            >
+              {{ user.gender === "f" ? "女" : "男" }}
             </el-tag>
             <el-tag :type="hasSent ? 'success' : 'info'" size="small">
-              {{ hasSent ? '已发送' : '未发送' }}
+              {{ hasSent ? "已发送" : "未发送" }}
             </el-tag>
           </div>
           <div class="user-location">IP: {{ user.location }}</div>
@@ -30,18 +35,20 @@
       <div class="user-description">{{ user.description }}</div>
       <div class="user-actions">
         <el-button size="small" @click="$emit('view-details')">详情</el-button>
+        <el-button size="small" type="success" @click="copyLink"
+          >复制主页</el-button
+        >
         <el-button
-            size="small"
-            v-if="!hasSent"
-            type="primary"
-            :disabled="user.isSent"
-            @click="$emit('send')"
+          size="small"
+          v-if="!hasSent"
+          type="primary"
+          :disabled="user.isSent"
+          @click="$emit('send')"
         >
           发送
         </el-button>
-        <el-button
-            size="small"
-            type="danger" @click="$emit('delete')">删除
+        <el-button size="small" type="danger" @click="$emit('delete')"
+          >删除
         </el-button>
       </div>
     </div>
@@ -49,28 +56,34 @@
 </template>
 
 <script setup lang="ts">
-import type { User } from '../../../types/user.ts'
-import { computed } from 'vue'
+import type { User } from "../../../types/user.ts";
+import { computed } from "vue";
 import { openWeiboUrl } from "../index.ts";
+import { ElMessage } from "element-plus";
 
 const props = defineProps<{
-  user: User
-  sentIds: string[]
-}>()
+  user: User;
+  sentIds: string[];
+}>();
 
 defineEmits<{
-  'view-details': []
-  'send': []
-  'delete': []
-}>()
+  "view-details": [];
+  send: [];
+  delete: [];
+}>();
 
-const hasSent = computed(() => props.sentIds.includes(props.user.id + ''))
+const hasSent = computed(() => props.sentIds.includes(props.user.id + ""));
 
 function openWeiboProfile(id: number) {
-  openWeiboUrl(id)
+  openWeiboUrl(id);
+}
+
+function copyLink() {
+  const link = `https://weibo.com/u/${props.user.id}`;
+  navigator.clipboard.writeText(link);
+  ElMessage.success("已复制到剪贴板");
 }
 </script>
-
 
 <style scoped>
 .user-card {
@@ -122,7 +135,7 @@ function openWeiboProfile(id: number) {
 
 .stat-value {
   font-weight: 500;
-  color: #409EFF;
+  color: #409eff;
 }
 
 .stat-label {
